@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survival Pack - Sacs de survie personnalisés</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            scroll-behavior: smooth;
+        }
+        
+        .hero {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1504280396767-1c60fb227f57?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        
+        .item-card {
+            transition: all 0.3s ease;
+        }
+        
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .selected-item {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        
+        .nav-link::after {
+            content: '';
+            display: block;
+            width: 0;
+            height: 2px;
+            background: #f97316;
+            transition: width 0.3s;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .cart-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: #f97316 #1f2937;
+        }
+        
+        .cart-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .cart-scroll::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        
+        .cart-scroll::-webkit-scrollbar-thumb {
+            background-color: #f97316;
+            border-radius: 3px;
+        }
+        
+        .modal {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        .modal-open {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .modal-closed {
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-gray-800 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <span class="text-orange-500 font-bold text-xl"><i class="fas fa-fire mr-2"></i>SURVIVAL PACK</span>
+                    </div>
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-4">
+                            <a href="#home" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-orange-400 transition">Accueil</a>
+                            <a href="#configurer" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-orange-400 transition">Configurer</a>
+                            <a href="#about" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-orange-400 transition">À propos</a>
+                            <a href="#contact" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-orange-400 transition">Contact</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-4 flex items-center md:ml-6">
+                        <button id="desktop-cart-btn" class="bg-orange-600 hover:bg-orange-700 px-4 py-2 rounded-md text-sm font-medium transition flex items-center relative">
+                            <i class="fas fa-shopping-cart mr-2"></i>Mon Sac
+                            <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none" aria-expanded="false" aria-controls="mobile-menu">
+                        <span class="sr-only">Ouvrir le menu principal</span>
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div class="hidden md:hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#home" class="block px-3 py-2 rounded-md text-base font-medium hover:text-orange-400">Accueil</a>
+                <a href="#configurer" class="block px-3 py-2 rounded-md text-base font-medium hover:text-orange-400">Configurer</a>
+                <a href="#about" class="block px-3 py-2 rounded-md text-base font-medium hover:text-orange-400">À propos</a>
+                <a href="#contact" class="block px-3 py-2 rounded-md text-base font-medium hover:text-orange-400">Contact</a>
+                <button id="mobile-cart-btn" class="w-full text-left block px-3 py-2 rounded-md text-base font-medium bg-orange-600 text-white mt-2">
+                    <i class="fas fa-shopping-cart mr-2"></i>Mon Sac
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero min-h-screen flex items-center justify-center text-center px-4">
+        <div class="max-w-4xl mx-auto fade-in">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 text-orange-400">PRÊT POUR L'INATTENDU</h1>
+            <p class="text-xl md:text-2xl mb-8">Construisez votre sac de survie sur mesure. Chaque élément compte quand chaque seconde compte.</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#configurer" class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900">
+                    <i class="fas fa-plus-circle mr-2"></i>Créer mon sac
+                </a>
+                <a href="#about" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900">
+                    <i class="fas fa-info-circle mr-2"></i>En savoir plus
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Configuration Section -->
+    <section id="configurer" class="py-16 px-4 sm:px-6 lg:px-8 bg-gray-800">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-12 text-orange-400">CONFIGUREZ VOTRE SAC DE SURVIE</h2>
+            
+            <!-- Search Bar -->
+            <div class="max-w-md mx-auto mb-8">
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                    <input type="text" id="search-input" class="block w-full pl-10 pr-3 py-2 border border-gray-700 rounded-lg bg-gray-900 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Rechercher un objet...">
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Items Selection -->
+                <div class="lg:col-span-2">
+                    <div class="bg-gray-900 rounded-lg shadow-lg p-6">
+                        <h3 class="text-xl font-semibold mb-6 text-center border-b border-gray-700 pb-4">OBJETS DISPONIBLES</h3>
+                        
+                        <!-- Filter Buttons -->
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <button class="filter-btn active px-4 py-2 rounded-full bg-orange-600 text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900" data-category="all">Tous</button>
+                            <button class="filter-btn px-4 py-2 rounded-full bg-gray-700 hover:bg-gray-600 text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900" data-category="nourriture">Nourriture</button>
+                            <button class="filter-btn px-4 py-2 rounded-full bg-gray-700 hover:bg-gray-600 text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900" data-category="outils">Outils</button>
+                            <button class="filter-btn px-4 py-2 rounded-full bg-gray-700 hover:bg-gray-600 text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900" data-category="medical">Médical</button>
+                            <button class="filter-btn px-4 py-2 rounded-full bg-gray-700 hover:bg-gray-600 text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900" data-category="protection">Protection</button>
+                            <button class="filter-btn px-4 py-2 rounded-full bg-gray-700 hover:bg-gray-600 text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900" data-category="preconfig">Préconfigurations</button>
+                        </div>
+                        
+                        <!-- Items Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="items-grid">
+                            <!-- Items will be added here by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Cart Summary -->
+                <div class="lg:block hidden">
+                    <div class="bg-gray-900 rounded-lg shadow-lg p-6 sticky top-24">
+                        <h3 class="text-xl font-semibold mb-6 text-center border-b border-gray-700 pb-4">VOTRE SAC</h3>
+                        
+                        <!-- Selected Items List -->
+                        <div class="mb-6 max-h-96 overflow-y-auto cart-scroll" id="selected-items">
+                            <p class="text-gray-500 text-center py-8">Ajoutez des objets à votre sac</p>
+                        </div>
+                        
+                        <!-- Summary -->
+                        <div class="border-t border-gray-700 pt-4">
+                            <div class="flex justify-between mb-2">
+                                <span>Total poids:</span>
+                                <span id="total-weight">0 kg</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>Poids max recommandé:</span>
+                                <span>5 kg</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2.5 mb-4">
+                                <div id="weight-bar" class="bg-orange-600 h-2.5 rounded-full" style="width: 0%"></div>
+                            </div>
+                            <div class="flex justify-between mb-4 text-lg font-semibold">
+                                <span>Total prix:</span>
+                                <span id="total-price">0 €</span>
+                            </div>
+                            
+                            <button id="checkout-btn" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-4 rounded-lg transition flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900">
+                                <i class="fas fa-check-circle mr-2"></i> Finaliser la commande
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mobile Cart Modal -->
+    <div id="mobile-cart-modal" class="modal fixed inset-0 z-50 flex items-end justify-center modal-closed" aria-hidden="true">
+        <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" aria-hidden="true" id="modal-backdrop"></div>
+        
+        <div class="relative w-full max-w-md transform transition-all">
+            <div class="bg-gray-800 rounded-t-lg shadow-xl overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-700 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold">VOTRE SAC</h3>
+                    <button id="close-modal-btn" class="text-gray-400 hover:text-white focus:outline-none">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="max-h-96 overflow-y-auto cart-scroll px-4 py-2" id="mobile-selected-items">
+                    <p class="text-gray-500 text-center py-8">Ajoutez des objets à votre sac</p>
+                </div>
+                
+                <div class="px-4 py-4 border-t border-gray-700">
+                    <div class="flex justify-between mb-2">
+                        <span>Total poids:</span>
+                        <span id="mobile-total-weight">0 kg</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span>Poids max recommandé:</span>
+                        <span>5 kg</span>
+                    </div>
+                    <div class="w-full bg-gray-700 rounded-full h-2.5 mb-4">
+                        <div id="mobile-weight-bar" class="bg-orange-600 h-2.5 rounded-full" style="width: 0%"></div>
+                    </div>
+                    <div class="flex justify-between mb-4 text-lg font-semibold">
+                        <span>Total prix:</span>
+                        <span id="mobile-total-price">0 €</span>
+                    </div>
+                    
+                    <button id="mobile-checkout-btn" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-4 rounded-lg transition flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-800">
+                        <i class="fas fa-check-circle mr-2"></i> Finaliser la commande
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="modal fixed inset-0 z-50 flex items-center justify-center modal-closed" aria-hidden="true">
+        <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" aria-hidden="true" id="checkout-modal-backdrop"></div>
+        
+        <div class="relative w-full max-w-md transform transition-all">
+            <div class="bg-gray-800 rounded-lg shadow-xl overflow-hidden mx-4">
+                <div class="px-6 py-4 border-b border-gray-700 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold">FINALISER LA COMMANDE</h3>
+                    <button id="close-checkout-modal-btn" class="text-gray-400 hover:text-white focus:outline-none">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="px-6 py-4">
+                    <p class="mb-4">Votre sac de survie personnalisé est prêt !</p>
+                    
+                    <div class="mb-6">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-400">Nombre d'objets:</span>
+                            <span id="checkout-item-count">0</span>
+                        </div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-400">Poids total:</span>
+                            <span id="checkout-total-weight">0 kg</span>
+                        </div>
+                        <div class="flex justify-between mb-4 font-semibold">
+                            <span>Total:</span>
+                            <span id="checkout-total-price">0 €</span>
+                        </div>
+                    </div>
+                    
+                    <form id="checkout-form" class="space-y-4">
+                        <div>
+                            <label for="email" class="block text-sm font-medium mb-1">Email</label>
+                            <input type="email" id="email" required class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label for="address" class="block text-sm font-medium mb-1">Adresse</label>
+                            <textarea id="address" rows="3" required class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-4 rounded-lg transition flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-800">
+                            <i class="fas fa-credit-card mr-2"></i> Payer maintenant
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <section id="about" class="py-16 px-4 sm:px-6 lg:px-8 bg-gray-900">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-12 text-orange-400">À PROPOS DE NOUS</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">Notre Mission</h3>
+                    <p class="mb-4 text-gray-300">Chez Survival Pack, nous croyons que la préparation est la clé de la survie. Notre mission est de fournir des équipements de survie de haute qualité, personnalisables pour répondre à vos besoins spécifiques.</p>
+                    <p class="mb-4 text-gray-300">Fondée en 2015 par d'anciens militaires et experts en survie, notre entreprise combine expertise technique et connaissance du terrain pour vous offrir les meilleurs produits.</p>
+                    
+                    <h3 class="text-xl font-semibold mt-8 mb-4">Pourquoi nous choisir?</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-orange-500 mt-1 mr-2"></i>
+                            <span>Produits testés en conditions réelles</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-orange-500 mt-1 mr-2"></i>
+                            <span>Personnalisation totale de votre équipement</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-orange-500 mt-1 mr-2"></i>
+                            <span>Conseils d'experts inclus avec chaque commande</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-orange-500 mt-1 mr-2"></i>
+                            <span>Garantie à vie sur tous nos produits</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="relative">
+                    <img src="https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Équipe Survival Pack en pleine nature" class="rounded-lg shadow-xl w-full h-auto" loading="lazy" width="800" height="600">
+                    <div class="absolute -bottom-4 -right-4 bg-orange-600 text-white p-4 rounded-lg shadow-lg">
+                        <p class="font-bold">15+ ans</p>
+                        <p class="text-sm">d'expérience</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Preconfigured Packs -->
+            <div class="mt-16">
+                <h3 class="text-2xl font-semibold mb-6 text-center text-orange-400">PRÉCONFIGURATIONS POPULAIRES</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden transition transform hover:scale-105">
+                        <div class="p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-orange-600 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                                    <i class="fas fa-hiking text-white"></i>
+                                </div>
+                                <h4 class="text-lg font-semibold">Randonnée</h4>
+                            </div>
+                            <p class="text-gray-400 text-sm mb-4">Essentiels pour une randonnée de 3 jours en montagne.</p>
+                            <div class="flex justify-between text-sm mb-4">
+                                <span><i class="fas fa-weight-hanging mr-1"></i> 2.8 kg</span>
+                                <span><i class="fas fa-euro-sign mr-1"></i> 120</span>
+                            </div>
+                            <button class="w-full bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-lg transition flex items-center justify-center text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-800" data-pack="randonnee">
+                                <i class="fas fa-plus-circle mr-2"></i> Ajouter ce pack
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden transition transform hover:scale-105">
+                        <div class="p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-orange-600 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                                    <i class="fas fa-home text-white"></i>
+                                </div>
+                                <h4 class="text-lg font-semibold">Urbain</h4>
+                            </div>
+                            <p class="text-gray-400 text-sm mb-4">Pour survivre en ville pendant une semaine sans ressources.</p>
+                            <div class="flex justify-between text-sm mb-4">
+                                <span><i class="fas fa-weight-hanging mr-1"></i> 3.5 kg</span>
+                                <span><i class="fas fa-euro-sign mr-1"></i> 150</span>
+                            </div>
+                            <button class="w-full bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-lg transition flex items-center justify-center text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-800" data-pack="urbain">
+                                <i class="fas fa-plus-circle mr-2"></i> Ajouter ce pack
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden transition transform hover:scale-105">
+                        <div class="p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-orange-600 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                                    <i class="fas fa-exclamation-triangle text-white"></i>
+                                </div>
+                                <h4 class="text-lg font-semibold">Catastrophe</h4>
+                            </div>
+                            <p class="text-gray-400 text-sm mb-4">Kit complet pour situations d'urgence extrêmes.</p>
+                            <div class="flex justify-between text-sm mb-4">
+                                <span><i class="fas fa-weight-hanging mr-1"></i> 4.2 kg</span>
+                                <span><i class="fas fa-euro-sign mr-1"></i> 200</span>
+                            </div>
+                            <button class="w-full bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-lg transition flex items-center justify-center text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-800" data-pack="catastrophe">
+                                <i class="fas fa-plus-circle mr-2"></i> Ajouter ce pack
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 px-4 sm:px-6 lg:px-8 bg-gray-800">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-12 text-orange-400">CONTACTEZ-NOUS</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">Informations de contact</h3>
+                    <p class="mb-6 text-gray-300">Nous sommes disponibles pour répondre à toutes vos questions sur nos produits et services.</p>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-orange-500 mt-1 mr-4"></i>
+                            <div>
+                                <p class="font-semibold">Adresse</p>
+                                <p class="text-gray-300">12 Rue de la Survie, 75000 Paris</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-phone text-orange-500 mt-1 mr-4"></i>
+                            <div>
+                                <p class="font-semibold">Téléphone</p>
+                                <p class="text-gray-300">+33 1 23 45 67 89</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-envelope text-orange-500 mt-1 mr-4"></i>
+                            <div>
+                                <p class="font-semibold">Email</p>
+                                <p class="text-gray-300">contact@survivalpack.com</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8">
+                        <h4 class="font-semibold mb-4">Suivez-nous</h4>
+                        <div class="flex space-x-4">
+                            <a href="#" class="text-orange-500 hover:text-orange-400 text-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-800 rounded-full p-2" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="text-orange-500 hover:text-orange-400 text-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-800 rounded-full p-2" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="text-orange-500 hover:text-orange-400 text-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-800 rounded-full p-2" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="text-orange-500 hover:text-orange-400 text-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-800 rounded-full p-2" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <form id="contact-form" class="bg-gray-900 rounded-lg shadow-lg p-6">
+                        <div class="mb-4">
+                            <label for="name" class="block text-sm font-medium mb-2">Nom complet</label>
+                            <input type="text" id="name" required class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        </div>
+                        <div class="mb-4">
+                            <label for="email" class="block text-sm font-medium mb-2">Email</label>
+                            <input type="email" id="email" required class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        </div>
+                        <div class="mb-4">
+                            <label for="subject" class="block text-sm font-medium mb-2">Sujet</label>
+                            <input type="text" id="subject" required class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        </div>
+                        <div class="mb-4">
+                            <label for="message" class="block text-sm font-medium mb-2">Message</label>
+                            <textarea id="message" rows="4" required class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-4 rounded-lg transition flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900">
+                            Envoyer le message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 py-8 px-4 sm:px-6 lg:px-8 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 text-orange-400">Survival Pack</h4>
+                    <p class="text-gray-400">Votre partenaire en équipement de survie personnalisé depuis 2015.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Liens rapides</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="text-gray-400 hover:text-orange-400 transition focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded px-2 py-1">Accueil</a></li>
+                        <li><a href="#configurer" class="text-gray-400 hover:text-orange-400 transition focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded px-2 py-1">Configurer un sac</a></li>
+                        <li><a href="#about" class="text-gray-400 hover:text-orange-400 transition focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded px-2 py-1">À propos</a></li>
+                        <li><a href="#contact" class="text-gray-400 hover:text-orange-400 transition focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded px-2 py-1">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-orange-400 transition focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded px-2 py-1">FAQ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-orange-400 transition focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded px-2 py-1">Livraison</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-orange-400 transition focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded px-2 py-1">Retours</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-orange-400 transition focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded px-2 py-1">Politique de confidentialité</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Newsletter</h4>
+                    <p class="text-gray-400 mb-4">Abonnez-vous pour recevoir nos conseils de survie et offres spéciales.</p>
+                    <div class="flex">
+                        <input type="email" placeholder="Votre email" class="px-4 py-2 bg-gray-800 text-white rounded-l-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent w-full">
+                        <button class="bg-orange-600 hover:bg-orange-700 px-4 py-2 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
+                <p>&copy; 2023 Survival Pack. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Sample items data
+        const items = [
+            { id: 1, name: "Rations alimentaires (7 jours)", category: "nourriture", price: 45, weight: 1.8, icon: "fa-utensils", description: "Rations lyophilisées pour 7 jours, 2000 kcal/jour" },
+            { id: 2, name: "Filtre à eau portable", category: "nourriture", price: 35, weight: 0.3, icon: "fa-tint", description: "Filtre 0.1 micron, 1000L capacité" },
+            { id: 3, name: "Multi-outil", category: "outils", price: 65, weight: 0.25, icon: "fa-tools", description: "15 fonctions, acier inoxydable" },
+            { id: 4, name: "Lampe torche tactique", category: "outils", price: 40, weight: 0.2, icon: "fa-lightbulb", description: "1000 lumens, étanche IPX8" },
+            { id: 5, name: "Trousse de premiers soins", category: "medical", price: 55, weight: 0.5, icon: "fa-first-aid", description: "150 pièces, guide inclus" },
+            { id: 6, name: "Couverture de survie", category: "protection", price: 12, weight: 0.1, icon: "fa-umbrella", description: "Réfléchissante, résistante aux intempéries" },
+            { id: 7, name: "Corde parachute", category: "outils", price: 25, weight: 0.15, icon: "fa-link", description: "7m, résistance 250kg" },
+            { id: 8, name: "Allume-feu", category: "outils", price: 15, weight: 0.05, icon: "fa-fire", description: "10,000 allumages, étanche" },
+            { id: 9, name: "Pansements compressifs", category: "medical", price: 18, weight: 0.08, icon: "fa-band-aid", description: "Lot de 5, stériles" },
+            { id: 10, name: "Boussole", category: "outils", price: 22, weight: 0.1, icon: "fa-compass", description: "Luminescente, étanche" },
+            { id: 11, name: "Couteau de survie", category: "outils", price: 75, weight: 0.35, icon: "fa-knife", description: "Lame 12cm, manche antidérapant" },
+            { id: 12, name: "Purificateur d'eau", category: "nourriture", price: 28, weight: 0.05, icon: "fa-water", description: "Comprimés pour 20L d'eau" }
+        ];
+
+        // Preconfigured packs
+        const preconfiguredPacks = {
+            randonnee: [
+                { id: 1, name: "Rations alimentaires (7 jours)", category: "nourriture", price: 45, weight: 1.8, icon: "fa-utensils" },
+                { id: 2, name: "Filtre à eau portable", category: "nourriture", price: 35, weight: 0.3, icon: "fa-tint" },
+                { id: 10, name: "Boussole", category: "outils", price: 22, weight: 0.1, icon: "fa-compass" }
+            ],
+            urbain: [
+                { id: 1, name: "Rations alimentaires (7 jours)", category: "nourriture", price: 45, weight: 1.8, icon: "fa-utensils" },
+                { id: 5, name: "Trousse de premiers soins", category: "medical", price: 55, weight: 0.5, icon: "fa-first-aid" },
+                { id: 6, name: "Couverture de survie", category: "protection", price: 12, weight: 0.1, icon: "fa-umbrella" },
+                { id: 4, name: "Lampe torche tactique", category: "outils", price: 40, weight: 0.2, icon: "fa-lightbulb" }
+            ],
+            catastrophe: [
+                { id: 1, name: "Rations alimentaires (7 jours)", category: "nourriture", price: 45, weight: 1.8, icon: "fa-utensils" },
+                { id: 2, name: "Filtre à eau portable", category: "nourriture", price: 35, weight: 0.3, icon: "fa-tint" },
+                { id: 5, name: "Trousse de premiers soins", category: "medical", price: 55, weight: 0.5, icon: "fa-first-aid" },
+                { id: 6, name: "Couverture de survie", category: "protection", price: 12, weight: 0.1, icon: "fa-umbrella" },
+                { id: 4, name: "Lampe torche tactique", category: "outils", price: 40, weight: 0.2, icon: "fa-lightbulb" },
+                { id: 11, name: "Couteau de survie", category: "outils", price: 75, weight: 0.35, icon: "fa-knife" }
+            ]
+        };
+
+        // Selected items
+        let selectedItems = [];
+        let totalPrice = 0;
+        let totalWeight = 0;
+        const MAX_RECOMMENDED_WEIGHT = 5; // kg
+
+        // DOM Elements
+        const itemsGrid = document.getElementById('items-grid');
+        const selectedItemsContainer = document.getElementById('selected-items');
+        const mobileSelectedItemsContainer = document.getElementById('mobile-selected-items');
+        const totalPriceElement = document.getElementById('total-price');
+        const totalWeightElement = document.getElementById('total-weight');
+        const mobileTotalPriceElement = document.getElementById('mobile-total-price');
+        const mobileTotalWeightElement = document.getElementById('mobile-total-weight');
+        const weightBar = document.getElementById('weight-bar');
+        const mobileWeightBar = document.getElementById('mobile-weight-bar');
+        const cartCount = document.getElementById('cart-count');
+        const searchInput = document.getElementById('search-input');
+        const mobileCartModal = document.getElementById('mobile-cart-modal');
+        const checkoutModal = document.getElementById('checkout-modal');
+        const checkoutItemCount = document.getElementById('checkout-item-count');
+        const checkoutTotalPrice = document.getElementById('checkout-total-price');
+        const checkoutTotalWeight = document.getElementById('checkout-total-weight');
+        const checkoutForm = document.getElementById('checkout-form');
+        const contactForm = document.getElementById('contact-form');
+
+        // Initialize the app
+        function init() {
+            displayItems();
+            setupEventListeners();
+            loadCartFromLocalStorage();
+            updateCart();
+        }
+
+        // Set up all event listeners
+        function setupEventListeners() {
+            // Mobile menu toggle
+            document.getElementById('mobile-menu-button').addEventListener('click', toggleMobileMenu);
+            
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active', 'bg-orange-600'));
+                    this.classList.add('active', 'bg-orange-600');
+                    
+                    const category = this.dataset.category;
+                    displayItems(category);
+                });
+            });
+            
+            // Cart buttons
+            document.getElementById('desktop-cart-btn').addEventListener('click', () => {
+                scrollToCart();
+            });
+            
+            document.getElementById('mobile-cart-btn').addEventListener('click', () => {
+                openMobileCartModal();
+            });
+            
+            // Checkout buttons
+            document.getElementById('checkout-btn').addEventListener('click', () => {
+                if (selectedItems.length > 0) {
+                    openCheckoutModal();
+                } else {
+                    alert('Votre sac est vide. Ajoutez des objets avant de finaliser la commande.');
+                }
+            });
+            
+            document.getElementById('mobile-checkout-btn').addEventListener('click', () => {
+                if (selectedItems.length > 0) {
+                    openCheckoutModal();
+                } else {
+                    alert('Votre sac est vide. Ajoutez des objets avant de finaliser la commande.');
+                }
+            });
+            
+            // Modal close buttons
+            document.getElementById('close-modal-btn').addEventListener('click', closeMobileCartModal);
+            document.getElementById('close-checkout-modal-btn').addEventListener('click', closeCheckoutModal);
+            document.getElementById('modal-backdrop').addEventListener('click', closeMobileCartModal);
+            document.getElementById('checkout-modal-backdrop').addEventListener('click', closeCheckoutModal);
+            
+            // Escape key to close modals
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeMobileCartModal();
+                    closeCheckoutModal();
+                }
+            });
+            
+            // Search input
+            searchInput.addEventListener('input', () => {
+                const searchTerm = searchInput.value.toLowerCase();
+                const currentCategory = document.querySelector('.filter-btn.active').dataset.category;
+                displayItems(currentCategory, searchTerm);
+            });
+            
+            // Preconfigured packs
+            document.querySelectorAll('[data-pack]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const packName = this.dataset.pack;
+                    addPreconfiguredPack(packName);
+                });
+            });
+            
+            // Form submissions
+            checkoutForm.addEventListener('submit', handleCheckout);
+            contactForm.addEventListener('submit', handleContactForm);
+            
+            // Smooth scrolling for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu if open
+                    const mobileMenu = document.getElementById('mobile-menu');
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+            
+            // Highlight active nav link on scroll
+            window.addEventListener('scroll', highlightActiveNavLink);
+        }
+
+        // Display items in the grid
+        function displayItems(category = 'all', searchTerm = '') {
+            itemsGrid.innerHTML = '';
+            
+            let filteredItems = items;
+            
+            // Filter by category
+            if (category !== 'all') {
+                filteredItems = items.filter(item => item.category === category);
+            }
+            
+            // Filter by search term
+            if (searchTerm) {
+                filteredItems = filteredItems.filter(item => 
+                    item.name.toLowerCase().includes(searchTerm) || 
+                    item.description.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (filteredItems.length === 0) {
+                itemsGrid.innerHTML = '<p class="text-gray-500 text-center col-span-3 py-8">Aucun objet trouvé</p>';
+                return;
+            }
+            
+            filteredItems.forEach(item => {
+                const isSelected = selectedItems.some(selected => selected.id === item.id);
+                
+                const itemElement = document.createElement('div');
+                itemElement.className = `item-card bg-gray-800 rounded-lg p-4 cursor-pointer transition ${isSelected ? 'border-2 border-orange-500' : 'border border-gray-700'}`;
+                itemElement.innerHTML = `
+                    <div class="flex items-center mb-3">
+                        <div class="bg-orange-600 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                            <i class="fas ${item.icon} text-white"></i>
+                        </div>
+                        <h4 class="font-semibold">${item.name}</h4>
+                    </div>
+                    <div class="flex justify-between text-sm text-gray-400 mb-3">
+                        <span><i class="fas fa-weight-hanging mr-1"></i> ${item.weight} kg</span>
+                        <span><i class="fas fa-euro-sign mr-1"></i> ${item.price}</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-3">${item.description}</p>
+                    <button class="w-full py-2 rounded-lg ${isSelected ? 'bg-gray-700 text-gray-400' : 'bg-orange-600 hover:bg-orange-700 text-white'} transition focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-800" data-id="${item.id}">
+                        ${isSelected ? 'Retirer' : 'Ajouter'}
+                    </button>
+                `;
+                
+                // Add event listener to the button
+                const button = itemElement.querySelector('button');
+                button.addEventListener('click', function() {
+                    const itemId = parseInt(this.getAttribute('data-id'));
+                    toggleItem(itemId);
+                });
+                
+                itemsGrid.appendChild(itemElement);
+            });
+        }
+
+        // Toggle item selection
+        function toggleItem(itemId) {
+            const item = items.find(item => item.id === itemId);
+            
+            const itemIndex = selectedItems.findIndex(selected => selected.id === itemId);
+            
+            if (itemIndex === -1) {
+                // Add item
+                selectedItems.push({...item});
+                totalPrice += item.price;
+                totalWeight += item.weight;
+            } else {
+                // Remove item
+                selectedItems.splice(itemIndex, 1);
+                totalPrice -= item.price;
+                totalWeight -= item.weight;
+            }
+            
+            saveCartToLocalStorage();
+            updateCart();
+            displayItems(document.querySelector('.filter-btn.active').dataset.category, searchInput.value);
+        }
+
+        // Add preconfigured pack
+        function addPreconfiguredPack(packName) {
+            const packItems = preconfiguredPacks[packName];
+            
+            // First remove any items from the pack that might already be in the cart
+            packItems.forEach(packItem => {
+                const existingIndex = selectedItems.findIndex(item => item.id === packItem.id);
+                if (existingIndex !== -1) {
+                    const removedItem = selectedItems.splice(existingIndex, 1)[0];
+                    totalPrice -= removedItem.price;
+                    totalWeight -= removedItem.weight;
+                }
+            });
+            
+            // Then add all items from the pack
+            packItems.forEach(packItem => {
+                selectedItems.push({...packItem});
+                totalPrice += packItem.price;
+                totalWeight += packItem.weight;
+            });
+            
+            saveCartToLocalStorage();
+            updateCart();
+            displayItems(document.querySelector('.filter-btn.active').dataset.category, searchInput.value);
+            
+            // Show success message
+            alert(`Le pack ${packName} a été ajouté à votre sac !`);
+        }
+
+        // Update cart display
+        function updateCart() {
+            // Update desktop cart
+            updateCartContainer(selectedItemsContainer, selectedItems);
+            totalPriceElement.textContent = `${totalPrice.toFixed(2)} €`;
+            totalWeightElement.textContent = `${totalWeight.toFixed(2)} kg`;
+            
+            // Update mobile cart
+            updateCartContainer(mobileSelectedItemsContainer, selectedItems);
+            mobileTotalPriceElement.textContent = `${totalPrice.toFixed(2)} €`;
+            mobileTotalWeightElement.textContent = `${totalWeight.toFixed(2)} kg`;
+            
+            // Update weight bars
+            const weightPercentage = Math.min((totalWeight / MAX_RECOMMENDED_WEIGHT) * 100, 100);
+            weightBar.style.width = `${weightPercentage}%`;
+            mobileWeightBar.style.width = `${weightPercentage}%`;
+            
+            // Change color if over recommended weight
+            if (totalWeight > MAX_RECOMMENDED_WEIGHT) {
+                weightBar.classList.remove('bg-orange-600');
+                weightBar.classList.add('bg-red-600');
+                mobileWeightBar.classList.remove('bg-orange-600');
+                mobileWeightBar.classList.add('bg-red-600');
+            } else {
+                weightBar.classList.remove('bg-red-600');
+                weightBar.classList.add('bg-orange-600');
+                mobileWeightBar.classList.remove('bg-red-600');
+                mobileWeightBar.classList.add('bg-orange-600');
+            }
+            
+            // Update cart count
+            if (selectedItems.length > 0) {
+                cartCount.textContent = selectedItems.length;
+                cartCount.classList.remove('hidden');
+            } else {
+                cartCount.classList.add('hidden');
+            }
+        }
+
+        // Update a cart container (desktop or mobile)
+        function updateCartContainer(container, items) {
+            if (items.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">Ajoutez des objets à votre sac</p>';
+            } else {
+                container.innerHTML = '';
+                items.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'selected-item bg-gray-800 rounded-lg p-3 mb-2 flex justify-between items-center border border-gray-700';
+                    itemElement.innerHTML = `
+                        <div class="flex items-center">
+                            <div class="bg-orange-600 rounded-full w-8 h-8 flex items-center justify-center mr-2">
+                                <i class="fas ${item.icon} text-white text-sm"></i>
+                            </div>
+                            <span class="text-sm">${item.name}</span>
+                        </div>
+                        <div class="text-xs text-gray-400">
+                            <span>${item.weight}kg</span>
+                            <span class="mx-2">•</span>
+                            <span>${item.price}€</span>
+                        </div>
+                    `;
+                    container.appendChild(itemElement);
+                });
+            }
+        }
+
+        // Save cart to localStorage
+        function saveCartToLocalStorage() {
+            localStorage.setItem('survivalPackCart', JSON.stringify({
+                items: selectedItems,
+                totalPrice: totalPrice,
+                totalWeight: totalWeight
+            }));
+        }
+
+        // Load cart from localStorage
+        function loadCartFromLocalStorage() {
+            const cartData = localStorage.getItem('survivalPackCart');
+            if (cartData) {
+                const parsedData = JSON.parse(cartData);
+                selectedItems = parsedData.items || [];
+                totalPrice = parsedData.totalPrice || 0;
+                totalWeight = parsedData.totalWeight || 0;
+                updateCart();
+            }
+        }
+
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+            
+            const button = document.getElementById('mobile-menu-button');
+            const isExpanded = button.getAttribute('aria-expanded') === 'true';
+            button.setAttribute('aria-expanded', !isExpanded);
+        }
+
+        // Open mobile cart modal
+        function openMobileCartModal() {
+            mobileCartModal.classList.remove('modal-closed');
+            mobileCartModal.classList.add('modal-open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close mobile cart modal
+        function closeMobileCartModal() {
+            mobileCartModal.classList.remove('modal-open');
+            mobileCartModal.classList.add('modal-closed');
+            document.body.style.overflow = '';
+        }
+
+        // Open checkout modal
+        function openCheckoutModal() {
+            checkoutItemCount.textContent = selectedItems.length;
+            checkoutTotalPrice.textContent = `${totalPrice.toFixed(2)} €`;
+            checkoutTotalWeight.textContent = `${totalWeight.toFixed(2)} kg`;
+            
+            checkoutModal.classList.remove('modal-closed');
+            checkoutModal.classList.add('modal-open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close checkout modal
+        function closeCheckoutModal() {
+            checkoutModal.classList.remove('modal-open');
+            checkoutModal.classList.add('modal-closed');
+            document.body.style.overflow = '';
+        }
+
+        // Scroll to cart section
+        function scrollToCart() {
+            const cartSection = document.getElementById('configurer');
+            cartSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Handle checkout form submission
+        function handleCheckout(e) {
+            e.preventDefault();
+            
+            // In a real app, you would send this data to your backend
+            alert(`Commande confirmée ! Un email de confirmation a été envoyé à ${document.getElementById('email').value}`);
+            
+            // Reset cart
+            selectedItems = [];
+            totalPrice = 0;
+            totalWeight = 0;
+            saveCartToLocalStorage();
+            updateCart();
+            displayItems(document.querySelector('.filter-btn.active').dataset.category, searchInput.value);
+            
+            // Close modal
+            closeCheckoutModal();
+        }
+
+        // Handle contact form submission
+        function handleContactForm(e) {
+            e.preventDefault();
+            
+            // In a real app, you would send this data to your backend
+            alert('Merci pour votre message ! Nous vous répondrons dans les plus brefs délais.');
+            
+            // Reset form
+            contactForm.reset();
+        }
+
+        // Highlight active nav link on scroll
+        function highlightActiveNavLink() {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                
+                if (pageYOffset >= sectionTop - 300) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('text-orange-400');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('text-orange-400');
+                }
+            });
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+<p style="border-radius: 8px; text-align: center; font-size: 12px; color: #fff; margin-top: 16px;position: fixed; left: 8px; bottom: 8px; z-index: 10; background: rgba(0, 0, 0, 0.8); padding: 4px 8px;">Made with <img src="https://enzostvs-deepsite.hf.space/logo.svg" alt="DeepSite Logo" style="width: 16px; height: 16px; vertical-align: middle;display:inline-block;margin-right:3px;filter:brightness(0) invert(1);"><a href="https://enzostvs-deepsite.hf.space" style="color: #fff;text-decoration: underline;" target="_blank" >DeepSite</a> - 🧬 <a href="https://enzostvs-deepsite.hf.space?remix=Daynnsancho/survival-pack" style="color: #fff;text-decoration: underline;" target="_blank" >Remix</a></p></body>
+</html>
